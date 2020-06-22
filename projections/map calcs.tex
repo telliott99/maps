@@ -1,0 +1,123 @@
+\documentclass[11pt, oneside]{article} 
+\usepackage{geometry}
+\geometry{letterpaper} 
+\usepackage{graphicx}
+	
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{parskip}
+\usepackage{color}
+\usepackage{hyperref}
+
+\graphicspath{{/Users/telliott/Github/figures/}}
+% \begin{center} \includegraphics [scale=0.4] {gauss3.png} \end{center}
+
+\title{Map projections and their calculation}
+\date{}
+
+\begin{document}
+\maketitle
+\large
+
+The standard projection used in converting latitudes and longitudes on the (roughly) spherical earth to a planar map depends on what you're projecting.
+
+Most people know about the Mercator projection.  The one used extensively for the United States is called the Albers projection.
+
+\url{https://en.wikipedia.org/wiki/Albers_projection}
+
+In the wikipedia article was found at this url
+
+\url{https://pubs.usgs.gov/pp/1395/report.pdf}
+
+referenced in this answer to a question on Stack Exchange.
+
+\url{https://gis.stackexchange.com/questions/302635/trying-to-implement-albers-projection-in-python-what-is-going-wrong/302642}
+
+I'll put the code elsewhere (it's always a pain to format for LaTeX).  This discussion is about implementing the math.
+
+\subsection*{spherical case}
+
+The idealized spherical earth is a bit easier, so we'll go through that first, and then talk about the earth as an ellipsoid.
+
+What you must do first is to pick two reference latitudes.  These are referred to in the following by the letter $\phi$.  So the reference latitudes are $\phi_1$ and $\phi_2$.
+
+The standards are:  lower 48 states $29.5, 45.5$, Alaska: $55, 65$, and Hawaii $8,18$.
+
+You also pick a center for the map labeled as longitude $\phi_0$ and latitude $\lambda_0$.
+
+$R$ is a given constant.  For the spherical case it is $1.0$.
+
+We use the above constants to calculate 
+
+\[ n = \frac{1}{2}(\sin \phi_1 + \sin \phi_2) \]
+\[ C = \cos^2 \phi_1 + 2n \sin \phi_1 \]
+\[ \rho_0 =  \frac{R}{n} \ \sqrt{C - 2n \sin \phi_0} \]
+
+$n$ $C$ and $\rho_0$ are the same for all calculations for a given projection center and reference latitudes.
+
+The next calculation, for $\rho$, requires each individual $\phi$:
+
+\[ \rho = \frac{R}{n} \ \sqrt{C - 2n \sin \phi} \]
+
+$\theta$ depends on $\lambda$:
+\[ \theta = n(\lambda - \lambda_0) \]
+
+Given the three values $\theta$, $\rho$ and $\rho_0$, we can calculate $(x,y)$ according to:
+
+\[ x = \rho \sin \theta \]
+\[ y = \rho_0 - \rho \cos \theta \]
+
+So finally, we can process a series of tuples $\phi, \lambda$ to convert them to Cartesian $(x,y)$ coordinates.
+
+Three more values can be calculated:  $h, k$ and $\omega$.  The first two are the scales of the plot, and the $\omega$ is the maximum angular deformation.
+
+This projection preserves areas, but allows deformation of angles.
+
+\subsection*{ellipsoid}
+
+There are two additional factors for the ellipsoid, which I'm guessing relate to the semi-major axis and eccentricity:   $a$ and $e$.
+
+$q_1$ and $q_2$ are calculated based on the reference latitudes $\phi_1$ and $\phi_2$.
+
+\[ q = (1-e^2) \ [ \  \frac{\sin \phi}{(1- e^2 \sin^2 \phi)} - \frac{1}{2e} \ ] \ [ \ \ln \ \frac{1 - e \sin \phi}{1 + e \sin \phi} \ ] \]
+
+$m$ depends on each individual $\phi$:
+
+\[ m = \frac{\cos \phi}{(1 - e^2 \sin^2 \phi)^{1/2}} \]
+
+Then
+\[ n = \frac{m_1^2 - m_2^2}{q_2 - q_1} \]
+\[ C = m_1^2 + nq_1^2 \]
+\[ \rho_0 = \frac{a \sqrt{C - nq_0)} }{n} \]
+
+As before, $n$ $C$ and $\rho_0$ are the same for all calculations for a given projection center and reference latitudes.
+
+\[ \rho = \frac{a \sqrt{C - nq)} }{n} \]
+\[ \theta = n (\lambda = \lambda_0) \]
+
+and as before
+
+\[ x = \rho \sin \theta \]
+\[ y = \rho_0 - \rho \cos \theta \]
+
+Inverse formulas are also given for both cases.  Let us turn to page 291 of the reference.
+
+\subsection*{numerical example, spherical case}
+
+Given:
+
+Radius of the sphere:
+\[ R = 1.0 \]
+Standard parallels:
+\[ \phi_1 = 29.5^{\circ} \text{N}. \]
+\[ \phi_2 = 45.5^{\circ} \text{N}. \]
+Origin:
+\[ \phi_0 = 23^{\circ} \text{N}. \]
+\[ \lambda_0 = 96^{\circ} \text{W}. \]
+
+The given point is $(35^{\circ} \text{N}., 75^{\circ} \text{W}.)$.
+
+See the accompanying script for the calculations.  We match the text.
+
+
+\end{document} 
