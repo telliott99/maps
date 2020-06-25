@@ -54,6 +54,9 @@ for f in L:
     cL = f['geometry']['coordinates']
     
     # this is wrong
+    if type(cL[0][0][0]) != type(3.14):
+        cL = cL[0]
+    
     sL = cL[0]
     pL.append((fips, county, state, sL))
     

@@ -92,13 +92,16 @@ def test1():
     print('test1')
     p0 = 23
     l0 = -96
-    print('p:  %.1f' % p0)
-    print('l: %.1f' % l0)
+    print('p0: %.1f' % p0)
+    print('l0: %.1f' % l0)
     
-    g = calc(p0,l0)
+    g = project(p0,l0)
     
     p = 35
     l = -75
+    print('p:  %.1f' % p)
+    print('l:  %.1f' % l)
+
     x,y = g(p,l)
     
     print('x:  %.1f' % x)

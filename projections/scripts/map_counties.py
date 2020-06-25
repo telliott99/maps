@@ -1,11 +1,13 @@
 import sys, os
+fn = sys.argv[1]
+
 base = os.environ.get('covid_base')
 sys.path.insert(0,base)
 
 import myutil.ugeo as ugeo
 import myutil.ustrings as ustrings
 
-abbrev = sys.argv[1]
+abbrev = sys.argv[2]
 requested_state = ustrings.abbrev_to_state[abbrev]
 
 import plotly.graph_objects as go
@@ -14,7 +16,6 @@ from ellipsoid import project
 # center of projection:
 proj = project(33,-86)
 
-fn = 'counties1.geo.txt'
 with open(fn) as fh:
     data = fh.read().strip().split('\n\n')
 
@@ -31,6 +32,7 @@ for e in data:
     Y = []
     
     for line in rest:
+        print(line)
         lon, lat = line.strip().split('\t')
         lat = float(lat)
         lon = float(lon)
