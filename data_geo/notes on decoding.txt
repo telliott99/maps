@@ -1,0 +1,96 @@
+json can't load the new data file
+encoding error
+
+pip3 install validate-utf8
+
+errors are Spanish accents, tilde etc.
+
+The actual bytes are like
+
+>>> [ord(c) for c in 'ComerÌo']
+[67, 111, 109, 101, 114, 204, 111]
+>>> bin(204)
+'0b11001100'
+>>>
+
+The leading '0b110' says this should be a 2-byte code point
+https://en.wikipedia.org/wiki/UTF-8
+
+The following byte must start with '0b10' but it does not
+>>> bin(111)
+'0b1101111'
+
+So the question is, what is the encoding?  seems like ISO-8859-1
+
+so then
+
+>>> fn = 'gz_2010_us_050_00_5m.json'
+>>> fh = open(fn,'rb')
+>>> s = fh.decode('ISO-8859-1')
+>>> fn = 'counties2.json'
+>>> fh = open(fn,'w')
+>>> fh.write(s)
+5996982
+>>> fh = open(fn,'r')
+>>> fh.read()
+'{\n"type": "FeatureCollection"
+
+
+
+
+
+
+> validate-utf8 /Users/telliott/Dropbox/Github/maps/data_geo/gz_2010_us_050_00_20m.json
+invalid continuation byte
+  COUNTY": "045", "NAME": "Comerío", "LSAD": "Muno", "CENSUSARE
+                                ^
+invalid continuation byte
+  UNTY": "083", "NAME": "Las Marías", "LSAD": "Muno", "CENSUSAR
+                                ^
+invalid continuation byte
+  , "COUNTY": "055", "NAME": "Guánica", "LSAD": "Muno", "CENSUS
+                                ^
+invalid continuation byte
+  "COUNTY": "117", "NAME": "Rincón", "LSAD": "Muno", "CENSUSARE
+                                ^
+invalid continuation byte
+  ", "COUNTY": "119", "NAME": "Río Grande", "LSAD": "Muno", "CE
+                                ^
+invalid continuation byte
+  NTY": "125", "NAME": "San Germán", "LSAD": "Muno", "CENSUSARE
+                                ^
+invalid continuation byte
+  ": "131", "NAME": "San Sebastián", "LSAD": "Muno", "CENSUSARE
+                                ^
+invalid continuation byte
+  UNTY": "075", "NAME": "Juana Díaz", "LSAD": "Muno", "CENSUSAR
+                                ^
+invalid continuation byte
+  , "COUNTY": "013", "NAME": "Doña Ana", "LSAD": "County", "CEN
+                                ^
+invalid continuation byte
+  COUNTY": "021", "NAME": "Bayamón", "LSAD": "Muno", "CENSUSARE
+                                ^
+invalid continuation byte
+   "COUNTY": "029", "NAME": "Canóvanas", "LSAD": "Muno", "CENSU
+                                ^
+invalid continuation byte
+  , "COUNTY": "111", "NAME": "Peñuelas", "LSAD": "Muno", "CENSU
+                                ^
+invalid continuation byte
+  ", "COUNTY": "011", "NAME": "Añasco", "LSAD": "Muno", "CENSUS
+                                ^
+invalid continuation byte
+  "COUNTY": "033", "NAME": "Cataño", "LSAD": "Muno", "CENSUSARE
+                                ^
+invalid continuation byte
+  , "COUNTY": "087", "NAME": "Loíza", "LSAD": "Muno", "CENSUSAR
+                                ^
+invalid continuation byte
+  COUNTY": "091", "NAME": "Manatí", "LSAD": "Muno", "CENSUSAREA
+                                ^
+invalid start byte
+  COUNTY": "097", "NAME": "Mayagüez", "LSAD": "Muno", "CENSUSAR
+                                ^
+>
+
